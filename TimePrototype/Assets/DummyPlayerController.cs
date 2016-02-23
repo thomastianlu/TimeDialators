@@ -47,7 +47,7 @@ public class DummyPlayerController : MonoBehaviour {
     }
     
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         ManageInputs();
         ManageMovement();
@@ -125,8 +125,9 @@ public class DummyPlayerController : MonoBehaviour {
     {
         if (_inputSpace && _isGrounded)
         {
-            _rigidBody.AddForce(Vector2.up * _jumpForce * Mathf.Sqrt(_scale));
+            _rigidBody.AddForce(Vector2.up * _jumpForce * _scale);
             _isGrounded = false;
+            _inputSpace = false;
         }
 
         if (_inputA)

@@ -148,10 +148,9 @@ public class DummyPlayerController : MonoBehaviour {
 
     void ManageMovement()
     {
-        if (_inputSpace && _isGrounded)
+        if (_inputSpace)
         {
             _rigidBody.AddForce(Vector2.up * _jumpForce * _scale);
-            _isGrounded = false;
             _inputSpace = false;
         }
 

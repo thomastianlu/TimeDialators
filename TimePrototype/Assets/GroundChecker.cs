@@ -7,7 +7,7 @@ public class GroundChecker : MonoBehaviour {
     private PlayerController _parent;
 
 
-    void OnTriggerStay2D(Collider2D other) {
+    void OnTriggerEnter2D(Collider2D other) {
         if (other.tag == "Ground" || other.tag == "DummyPlayer") {
             Debug.Log(other.tag);
             _parent.SetGround(true);

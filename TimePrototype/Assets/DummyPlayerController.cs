@@ -32,6 +32,7 @@ public class DummyPlayerController : MonoBehaviour {
     private bool _inputD = false;
     [SerializeField]
     private bool _inputSpace = false;
+    private bool _inputOnce = false;
 
     [SerializeField]
     private float _scale;
@@ -112,11 +113,15 @@ public class DummyPlayerController : MonoBehaviour {
                 break;
 
             case InputState.SpacePressed:
-                _inputSpace = true;
+                if (!_inputOnce) { 
+                    _inputSpace = true;
+                    _inputOnce = true;
+                }
                 break;
 
             case InputState.SpaceReleased:
                 _inputSpace = false;
+                _inputOnce = false;
                 break;
         }
     }

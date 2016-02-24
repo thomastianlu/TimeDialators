@@ -44,6 +44,8 @@ public class InputRecorder : MonoBehaviour {
 
     public void ClearLog() {
         _inputLog.Clear();
+        _timer = 0f;
+        _iterator = 0;
     }
 
 	// Update is called once per frame

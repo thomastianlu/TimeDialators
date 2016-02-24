@@ -13,11 +13,4 @@ public class GroundChecker : MonoBehaviour {
             _parent.SetGround(true);
         }
     }
-
-    void OnTriggerExit2D(Collider2D other) {
-        if (other.tag == "Ground" || other.tag == "DummyPlayer")
-        {
-            _parent.SetGround(false);
-        }
-    }
 }

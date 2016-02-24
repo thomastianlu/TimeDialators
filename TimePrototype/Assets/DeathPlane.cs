@@ -17,12 +17,10 @@ public class DeathPlane : MonoBehaviour {
         if (other.tag == "Player") {
             other.gameObject.transform.position = _respawnPosition.position;
 
-
-            Dictionary<int, InputPair> _currentDictionary = _inputRecorder.ReturnDictionary();
-
             GameObject DummyPlayer = Instantiate(_dummyPlayer, _respawnPosition.position, _respawnPosition.rotation) as GameObject;
-            DummyPlayer.GetComponent<DummyPlayerController>().Initialize(_currentDictionary);
-            
+            DummyPlayer.GetComponent<DummyPlayerController>().Initialize(_inputRecorder.ReturnDictionary());
+
+            _inputRecorder.ClearLog();
         }
     }
 }

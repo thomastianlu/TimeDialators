@@ -55,7 +55,11 @@ public class DummyPlayerController : MonoBehaviour {
     }
 
     public void Initialize(Dictionary<int, InputPair> InputLog) {
-        _inputLog = InputLog;
+
+        for (int i = 0; i < InputLog.Count; i++)
+        {
+            _inputLog.Add(i, InputLog[i]);
+        }
     }
 
     public void SetGround(bool grounded)

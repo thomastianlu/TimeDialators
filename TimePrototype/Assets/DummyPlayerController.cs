@@ -39,6 +39,8 @@ public class DummyPlayerController : MonoBehaviour {
 
     private float _currentTime = 0f;
 
+    private Vector3 _initialSpawnPoint;
+
 
     // Use this for initialization
     void Start()
@@ -54,7 +56,9 @@ public class DummyPlayerController : MonoBehaviour {
         ManageMovement();
     }
 
-    public void Initialize(Dictionary<int, InputPair> InputLog) {
+    public void Initialize(Dictionary<int, InputPair> InputLog, Vector3 initialSpawnPoint) {
+
+        _initialSpawnPoint = initialSpawnPoint;
 
         for (int i = 0; i < InputLog.Count; i++)
         {
@@ -65,6 +69,12 @@ public class DummyPlayerController : MonoBehaviour {
     public void SetGround(bool grounded)
     {
         _isGrounded = grounded;
+    }
+
+    public void Reset() {
+        _currentTime = 0f;
+        _inputIterator = 0;
+        transform.position = _initialSpawnPoint;
     }
 
     void ManageInputs() {

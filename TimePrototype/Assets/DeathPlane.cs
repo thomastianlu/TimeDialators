@@ -13,12 +13,21 @@ public class DeathPlane : MonoBehaviour {
     [SerializeField]
     private InputRecorder _inputRecorder;
 
+    [SerializeField]
+    private List<GameObject> _listOfGhosts = new List<GameObject>();
+
     void OnTriggerEnter2D(Collider2D other) {
         if (other.tag == "Player") {
             other.gameObject.transform.position = _respawnPosition.position;
 
             GameObject DummyPlayer = Instantiate(_dummyPlayer, _respawnPosition.position, _respawnPosition.rotation) as GameObject;
-            DummyPlayer.GetComponent<DummyPlayerController>().Initialize(_inputRecorder.ReturnDictionary());
+            DummyPlayer.GetComponent<DummyPlayerController>().Initialize(_inputRecorder.ReturnDictionary(), _respawnPosition.position);
+
+            foreach (GameObject x in _listOfGhosts) {
+                x.GetComponent<DummyPlayerController>().Reset();
+            }
+
+            _listOfGhosts.Add(DummyPlayer);
 
             _inputRecorder.ClearLog();
         }

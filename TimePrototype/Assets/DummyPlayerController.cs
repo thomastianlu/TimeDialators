@@ -75,6 +75,13 @@ public class DummyPlayerController : MonoBehaviour {
         _currentTime = 0f;
         _inputIterator = 0;
         transform.position = _initialSpawnPoint;
+
+        _inputW = false;
+        _inputA = false;
+        _inputS = false;
+        _inputD = false;
+        _inputSpace = false;
+        _inputOnce = false;
     }
 
     void ManageInputs() {
@@ -134,7 +141,6 @@ public class DummyPlayerController : MonoBehaviour {
                 break;
 
             case InputState.SpaceReleased:
-                _inputSpace = false;
                 _inputOnce = false;
                 break;
         }

@@ -44,4 +44,17 @@ public class DeathPlane : MonoBehaviour {
             _inputRecorder.ClearLog();
         }
     }
+
+    public void SetRespawnPosition (Transform position)
+    {
+        _respawnPosition = position;
+
+        foreach (GameObject x in _listOfGhosts)
+        {
+            Destroy(x);
+        }
+
+        _listOfGhosts.Clear();
+        _inputRecorder.ClearLog();
+    }
 }

@@ -43,6 +43,9 @@ public class DummyPlayerController : MonoBehaviour {
     [SerializeField]
     private float _scale;
 
+    [SerializeField]
+    private Transform _art;
+
     private float _currentTime = 0f;
 
     private Vector3 _initialSpawnPoint;
@@ -174,6 +177,8 @@ public class DummyPlayerController : MonoBehaviour {
 
         if (_inputA)
         {
+            Debug.Log("WTF");
+            _art.localScale = new Vector3(-1f, 1f, 1f);
         }
 
         if (_inputS)
@@ -183,6 +188,7 @@ public class DummyPlayerController : MonoBehaviour {
 
         if (_inputD)
         {
+            _art.localScale = new Vector3(1f, 1f, 1f);
         }
     }
 }

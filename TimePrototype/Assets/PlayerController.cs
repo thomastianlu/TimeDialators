@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
 
@@ -21,8 +22,12 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private float _timer = 0f;
 
+    [SerializeField]
+    private Animator _anim;
+
     private bool _APressOnce = false;
     private bool _DPressOnce = false;
+
 
 	// Use this for initialization
 	void Start () {
@@ -49,6 +54,10 @@ public class PlayerController : MonoBehaviour {
 
         _inputRecorder.LogPosition(_timer, transform.position);
 
+        if (Input.GetKey(KeyCode.F1)) {
+            SceneManager.LoadScene(0);
+        }
+
         if (Input.GetKeyDown(KeyCode.Space) && _isGrounded == true)
         {
             _rigidBody.AddForce(Vector2.up * _jumpForce);
@@ -56,6 +65,12 @@ public class PlayerController : MonoBehaviour {
             _inputRecorder.LogKey(InputState.SpacePressed, _timer);
         }
 
+        if (!_isGrounded) {
+            _anim.CrossFade("JumpHold", 0.1f);
+        }
+        else if (_isGrounded && !_APressOnce && !_DPressOnce) {
+            _anim.Play("Idle");
+        }
 
         if (Input.GetKeyUp(KeyCode.Space))
         {
@@ -66,6 +81,7 @@ public class PlayerController : MonoBehaviour {
         {
             transform.position += Vector3.left * _moveSpeed;
             transform.localScale = new Vector3(-1f, 1f, 1f);
+            _anim.Play("Walk");
             if (!_APressOnce) { 
                 _inputRecorder.LogKey(InputState.APressed, _timer);
                 _APressOnce = true;
@@ -76,6 +92,7 @@ public class PlayerController : MonoBehaviour {
         {
             _inputRecorder.LogKey(InputState.AReleased, _timer);
             _APressOnce = false;
+            _anim.Play("Idle");
         }
 
         if (Input.GetKey(KeyCode.S))
@@ -92,6 +109,7 @@ public class PlayerController : MonoBehaviour {
         {
             transform.position += Vector3.right * _moveSpeed;
             transform.localScale = new Vector3(1f, 1f, 1f);
+            _anim.Play("Walk");
             if (!_DPressOnce)
             {
                 _inputRecorder.LogKey(InputState.DPressed, _timer);
@@ -102,6 +120,7 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetKeyUp(KeyCode.D)) {
             _inputRecorder.LogKey(InputState.DReleased, _timer);
             _DPressOnce = false;
+            _anim.Play("Idle");
         }
     }
 }

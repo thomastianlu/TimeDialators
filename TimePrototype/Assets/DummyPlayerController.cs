@@ -14,6 +14,8 @@ public class DummyPlayerController : MonoBehaviour {
     [SerializeField]
     private float _moveSpeed;
     private float _moveSpeedReset;
+
+    public GameObject Hat;
     
     [SerializeField]
     private int _inputIterator = 0;

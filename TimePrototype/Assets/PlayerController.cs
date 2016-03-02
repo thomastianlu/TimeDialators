@@ -47,6 +47,8 @@ public class PlayerController : MonoBehaviour {
 
         _timer += Time.deltaTime;
 
+        _inputRecorder.LogPosition(_timer, transform.position);
+
         if (Input.GetKeyDown(KeyCode.Space) && _isGrounded == true)
         {
             _rigidBody.AddForce(Vector2.up * _jumpForce);

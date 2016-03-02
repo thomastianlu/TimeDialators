@@ -18,9 +18,13 @@ public class DummyPlayerController : MonoBehaviour {
     [SerializeField]
     private int _inputIterator = 0;
 
+    private int _positionIterator = 0;
+
 
     [SerializeField]
     private Dictionary<int, InputPair> _inputLog = new Dictionary<int, InputPair>();
+    [SerializeField]
+    private Dictionary<float, PositionPair> _positionLog = new Dictionary<float, PositionPair>();
 
     [SerializeField]
     private bool _inputW = false;
@@ -56,13 +60,18 @@ public class DummyPlayerController : MonoBehaviour {
         ManageMovement();
     }
 
-    public void Initialize(Dictionary<int, InputPair> InputLog, Vector3 initialSpawnPoint) {
+    public void Initialize(Dictionary<int, InputPair> InputLog, Dictionary <int, PositionPair> PositionLog, Vector3 initialSpawnPoint) {
 
         _initialSpawnPoint = initialSpawnPoint;
 
         for (int i = 0; i < InputLog.Count; i++)
         {
             _inputLog.Add(i, InputLog[i]);
+        }
+
+        for (int i = 0; i < PositionLog.Count; i++)
+        {
+            _positionLog.Add(i, PositionLog[i]);
         }
     }
 
@@ -74,6 +83,7 @@ public class DummyPlayerController : MonoBehaviour {
     public void Reset() {
         _currentTime = 0f;
         _inputIterator = 0;
+        _positionIterator = 0;
         transform.position = _initialSpawnPoint;
 
         _inputW = false;
@@ -148,16 +158,20 @@ public class DummyPlayerController : MonoBehaviour {
 
     void ManageMovement()
     {
+
+        if (_positionIterator < _positionLog.Count - 1) { 
+            if (_positionLog[_positionIterator].TimeStamp < _currentTime) { 
+                transform.position = _positionLog[_positionIterator].Position;
+                _positionIterator++;
+            }
+        }
+
         if (_inputSpace)
         {
-            _rigidBody.AddForce(Vector2.up * _jumpForce * _scale);
-            _inputSpace = false;
         }
 
         if (_inputA)
         {
-            transform.position += Vector3.left * _moveSpeed * _scale;
-            transform.localScale = new Vector3(-1f, 1f, 1f);
         }
 
         if (_inputS)
@@ -167,8 +181,6 @@ public class DummyPlayerController : MonoBehaviour {
 
         if (_inputD)
         {
-            transform.position += Vector3.right * _moveSpeed * _scale;
-            transform.localScale = new Vector3(1f, 1f, 1f);
         }
     }
 }

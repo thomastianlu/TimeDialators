@@ -54,10 +54,6 @@ public class PlayerController : MonoBehaviour {
 
         _inputRecorder.LogPosition(_timer, transform.position);
 
-        if (Input.GetKey(KeyCode.F1)) {
-            SceneManager.LoadScene(0);
-        }
-
         if (Input.GetKeyDown(KeyCode.Space) && _isGrounded == true)
         {
             _rigidBody.AddForce(Vector2.up * _jumpForce);

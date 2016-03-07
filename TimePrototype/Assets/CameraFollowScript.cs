@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class CameraFollowScript : MonoBehaviour {
 
@@ -21,5 +22,16 @@ public class CameraFollowScript : MonoBehaviour {
         _followPosition.z = _followPositionZ;
 
         transform.position = Vector3.Slerp(transform.position, _followPosition, Time.deltaTime * _followSpeed);
-	}
+
+
+        if (Input.GetKey(KeyCode.F1))
+        {
+            SceneManager.LoadScene(0);
+        }
+
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
 }

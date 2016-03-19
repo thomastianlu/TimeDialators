@@ -2,12 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class DummyPlayerController : MonoBehaviour {
+public class InceptionDummyPlayerController : MonoBehaviour {
     
     private Rigidbody2D _rigidBody;
 
     [SerializeField]
     private bool _isGrounded;
+
+    [SerializeField]
+    private Transform _player;
 
     [SerializeField]
     private float _jumpForce;
@@ -26,7 +29,7 @@ public class DummyPlayerController : MonoBehaviour {
     [SerializeField]
     private Dictionary<int, InputPair> _inputLog = new Dictionary<int, InputPair>();
     [SerializeField]
-    private Dictionary<float, PositionPair> _positionLog = new Dictionary<float, PositionPair>();
+    private Dictionary<int, PositionPair> _positionLog = new Dictionary<int, PositionPair>();
 
     [SerializeField]
     private bool _inputW = false;
@@ -50,6 +53,12 @@ public class DummyPlayerController : MonoBehaviour {
 
     private Vector3 _initialSpawnPoint;
 
+    [SerializeField]
+    private int _generation;
+
+    [SerializeField]
+    private Animator _animator;
+
 
     // Use this for initialization
     void Start()
@@ -65,20 +74,27 @@ public class DummyPlayerController : MonoBehaviour {
         ManageMovement();
     }
 
-    public void Initialize(Dictionary<int, InputPair> InputLog, Dictionary <int, PositionPair> PositionLog, Vector3 initialSpawnPoint, float scale) {
+    public void Initialize(Dictionary<int, InputPair> InputLog, Dictionary <int, PositionPair> PositionLog, Vector3 initialSpawnPoint, int generation, Transform player) {
 
         _initialSpawnPoint = initialSpawnPoint;
-        _scale = scale;
+        _generation = generation;
+        _scale = (float)1/generation;
+        _player = player;
+
+        _animator.speed = (float) 1/generation;
 
         for (int i = 0; i < InputLog.Count; i++)
         {
             _inputLog.Add(i, InputLog[i]);
         }
 
-        for (int i = 0; i < PositionLog.Count; i++)
-        {
-            _positionLog.Add(i, PositionLog[i]);
-        }
+        _positionLog = PositionLog;
+    }
+
+    public void IncreaseGeneration()
+    {
+        _generation++;
+        _scale = (float) 1 / _generation;
     }
 
     public void SetGround(bool grounded)
@@ -170,6 +186,11 @@ public class DummyPlayerController : MonoBehaviour {
                 transform.position = _positionLog[_positionIterator].Position;
                 _positionIterator++;
             }
+        }
+        else
+        {
+            _player.position = transform.position;
+            Destroy(gameObject);
         }
 
         if (_inputSpace)

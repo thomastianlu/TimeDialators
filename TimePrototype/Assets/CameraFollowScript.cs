@@ -15,6 +15,11 @@ public class CameraFollowScript : MonoBehaviour {
 	void Start () {
         _followPositionZ = transform.position.z;
     }
+
+    public void SetPlayerFocus(Transform followObject)
+    {
+        _followObject = followObject;
+    }
 	
 	// Update is called once per frame
 	void Update () {

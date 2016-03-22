@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class InceptionPlayerController : MonoBehaviour {
 
+    [SerializeField]
     private Rigidbody2D _rigidBody;
 
     [SerializeField]
@@ -28,6 +29,7 @@ public class InceptionPlayerController : MonoBehaviour {
     Dictionary<int, PositionPair> _positionLog = new Dictionary<int, PositionPair>();
 
     private int _positionLogIterator = 0;
+    [SerializeField]
     private float _playBackTimer = 0f;
 
     [SerializeField]
@@ -51,6 +53,7 @@ public class InceptionPlayerController : MonoBehaviour {
     private bool _APressOnce = false;
     private bool _DPressOnce = false;
     
+    [SerializeField]
     private bool _spawnOnce = false;
 
     [SerializeField]
@@ -59,14 +62,32 @@ public class InceptionPlayerController : MonoBehaviour {
     [SerializeField]
     private int _currentGeneration;
 
+    [SerializeField]
+    private Transform _timerObj;
+    private float _timerObjCurrentSize;
+    private float _timerObjCurrentHeight;
+    private float _timerObjCurrentDepth;
+
+    [SerializeField]
+    private GameObject _robotHat;
+
     private bool _finishedRunThrough = false;
 
+    [SerializeField]
+    private float depthSpeed = 1;
+
+    [SerializeField]
+    private Color _playerColor;
 
 	// Use this for initialization
 	void Start () {
         _rigidBody = GetComponent<Rigidbody2D>();
         _moveSpeedReset = _moveSpeed;
-	}
+        _timerObjCurrentSize = _timerObj.localScale.x;
+        _timerObjCurrentHeight = _timerObj.localScale.y;
+        _timerObjCurrentDepth = _timerObj.localScale.z;
+
+    }
 	
     public void SetGround(bool grounded) {
         _isGrounded = grounded;
@@ -99,6 +120,10 @@ public class InceptionPlayerController : MonoBehaviour {
         _playBackTimer = 0f;
         _positionLogIterator = 0;
         _timer = 0;
+    }
+
+    public void ResetToRespawnPosition()
+    {
         transform.position = _currentRespawnPosition.position;
     }
 
@@ -119,6 +144,15 @@ public class InceptionPlayerController : MonoBehaviour {
             }
         }
 
+        foreach (SpriteRenderer x in _currentObjArt)
+        {
+            Color currentColor = x.color;
+            currentColor = new Color (1f, 1f, 1f);
+            x.color = currentColor;
+        }
+
+        _robotHat.SetActive(false);
+
     }
 
     public void ResetPlayBackMode()
@@ -129,7 +163,8 @@ public class InceptionPlayerController : MonoBehaviour {
     }
 
     void ManageInputs() {
-
+        
+        _timerObj.gameObject.SetActive(false);
         _timer += Time.deltaTime;
 
         _positionLog[_positionLogIterator] = new PositionPair { Position = transform.position, TimeStamp = _timer };
@@ -169,14 +204,7 @@ public class InceptionPlayerController : MonoBehaviour {
             _APressOnce = false;
             _anim.Play("Idle");
         }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-        }
-
-        if (Input.GetKeyUp(KeyCode.S))
-        {
-        }
+        
 
         // ---------------------------- SPAWN NEW PERSON -------------------------------- //
 
@@ -185,14 +213,10 @@ public class InceptionPlayerController : MonoBehaviour {
 
             if (!_spawnOnce && _currentGeneration < 3) {
                 SetInceptionLevelDown();
+                Debug.Log("WTFFFF");
             }
         }
-
-
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            _spawnOnce = false;
-        }
+        
         
         // ---------------------------- SPAWN NEW PERSON -------------------------------- //
 
@@ -240,6 +264,25 @@ public class InceptionPlayerController : MonoBehaviour {
         ResetPlayBackMode();
         _playBackMode = true;
         _spawnOnce = true;
+
+
+        _robotHat.SetActive(true);
+    }
+
+    public void ResetInception()
+    {
+        int InceptionIterator = _inceptionPlayerList.Length - 1;
+        while (InceptionIterator >= 0)
+        {
+            Debug.Log(_generationChecker.GetGeneration());
+            _inceptionPlayerList[InceptionIterator].GetComponent<InceptionPlayerController>().ResetToRespawnPosition();
+            _inceptionPlayerList[InceptionIterator].GetComponent<InceptionPlayerController>().SetEndIterator();
+            InceptionIterator--;
+        }
+
+        ClearLog();
+
+        _currentGeneration = 0;
     }
 
     public void SetColorDown()
@@ -247,25 +290,49 @@ public class InceptionPlayerController : MonoBehaviour {
         foreach (SpriteRenderer x in _currentObjArt)
         {
             Color currentColor = x.color;
-            currentColor -= new Color(0.25f, 0.25f, 0.25f, 0f);
+            currentColor = _playerColor;
             x.color = currentColor;
         }
+        depthSpeed = depthSpeed/2;
+        Debug.Log(gameObject.name + " " + depthSpeed);
     }
 
     public void SetColorUp()
     {
-        foreach (SpriteRenderer x in _currentObjArt)
+        depthSpeed = depthSpeed * 2;
+    }
+    
+    public void SetEndIterator()
+    {
+        _positionLogIterator = _positionLog.Count - 1;
+
+        _inceptionPlayerList[_generationChecker.GetGeneration()].GetComponent<InceptionPlayerController>().ClearLog();
+    }
+
+    public void PlayerSetDownLevel()
+    {
+        _inceptionPlayerList[_generationChecker.GetGeneration()].GetComponent<InceptionPlayerController>().ClearLog();
+        _rigidBody.isKinematic = true;
+        _inceptionPlayerList[_generationChecker.GetGeneration()].SetActive(false);
+        _currentGeneration--;
+        _generationChecker.DecreaseGeneration();
+
+        if (gameObject.name == "PlayerInception")
         {
-            Color currentColor = x.color;
-            currentColor += new Color(0.25f, 0.25f, 0.25f, 0f);
-            x.color = currentColor;
+            ClearLog();
         }
+
+        SetAsMainPlayer();
     }
 
     void PlayBackMode()
     {
-        Debug.Log(_currentObjArt[0].color.r * 2 / 3);
-        _playBackTimer += (Time.deltaTime * _currentObjArt[0].color.r * 2/3);
+        _spawnOnce = false;
+        _timerObj.gameObject.SetActive(true);
+        _playBackTimer += (Time.deltaTime * depthSpeed);
+        float finalTimeStamp = _positionLog[_positionLog.Count - 1].TimeStamp;
+
+        _timerObj.localScale = new Vector3((finalTimeStamp - _playBackTimer) / finalTimeStamp * _timerObjCurrentSize, _timerObjCurrentHeight, _timerObjCurrentDepth);
 
         if (_positionLogIterator < _positionLog.Count - 1)
         {
@@ -277,11 +344,7 @@ public class InceptionPlayerController : MonoBehaviour {
         }
         else
         {
-            _inceptionPlayerList[_generationChecker.GetGeneration()].GetComponent<InceptionPlayerController>().ClearLog();
-            _inceptionPlayerList[_generationChecker.GetGeneration()].SetActive(false);
-            _currentGeneration--;
-            _generationChecker.DecreaseGeneration();
-            SetAsMainPlayer();
+            PlayerSetDownLevel();
         }
     }
 }

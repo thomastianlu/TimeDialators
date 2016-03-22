@@ -8,6 +8,12 @@ public class InceptionDummyFloorActivator : MonoBehaviour {
     [SerializeField]
     private Transform _parentObj;
 
+    [SerializeField]
+    private Transform _playerField;
+
+    [SerializeField]
+    private InceptionGroundChecker _groundChecker;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -29,8 +35,14 @@ public class InceptionDummyFloorActivator : MonoBehaviour {
         {
             _groundObject.SetActive(false);
 
-            other.GetComponent<InceptionGroundChecker>().SetParent(null);
+            other.GetComponent<InceptionGroundChecker>().SetParent(_playerField);
             other.GetComponent<InceptionGroundChecker>().SetGravity(1);
         }
+    }
+
+    public void UnSetParent()
+    {
+        _groundChecker.SetParent(_playerField);
+        _groundChecker.SetGravity(1);
     }
 }

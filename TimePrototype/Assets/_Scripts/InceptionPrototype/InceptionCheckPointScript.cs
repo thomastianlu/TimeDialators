@@ -14,6 +14,10 @@ public class InceptionCheckPointScript : MonoBehaviour {
 
     [SerializeField]
     private bool _hitOnce = false;
+
+    [SerializeField]
+    private DeathPlaneInception _deathPlane;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -26,6 +30,8 @@ public class InceptionCheckPointScript : MonoBehaviour {
             if (other.tag == "Player") {
                 _hitOnce = true;
                 _player = other.GetComponent<InceptionPlayerController>();
+
+                _deathPlane.SetRespawnPosition(transform);
 
                 _sprite.color = new Color(1f, 1f, 1f);
 

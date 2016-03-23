@@ -32,23 +32,30 @@ public class DeathPlane : MonoBehaviour {
 
             other.gameObject.GetComponent<PlayerController>().ResetTimer();
 
-            GameObject DummyPlayer = Instantiate(_dummyPlayer, _respawnPosition.position, _respawnPosition.rotation) as GameObject;
-            DummyPlayer.GetComponent<DummyPlayerController>().Initialize(_inputRecorder.ReturnInputDictionary(), _inputRecorder.ReturnPositionDictionary(), _respawnPosition.position, 1);
-
-            foreach (GameObject x in _listOfGhosts) {
-                x.SetActive(true);
-                x.GetComponent<DummyPlayerController>().Reset();
-            }
-
-            _listOfGhosts.Add(DummyPlayer);
-
-            _inputRecorder.ClearLog();
+            //GenerateGhost();
         }
 
         if (other.tag == "DummyPlayer")
         {
             other.gameObject.SetActive(false);
         }
+    }
+
+    public void GenerateGhost()
+    {
+
+        GameObject DummyPlayer = Instantiate(_dummyPlayer, _respawnPosition.position, _respawnPosition.rotation) as GameObject;
+        DummyPlayer.GetComponent<DummyPlayerController>().Initialize(_inputRecorder.ReturnInputDictionary(), _inputRecorder.ReturnPositionDictionary(), _respawnPosition.position, 1);
+
+        foreach (GameObject x in _listOfGhosts)
+        {
+            x.SetActive(true);
+            x.GetComponent<DummyPlayerController>().Reset();
+        }
+
+        _listOfGhosts.Add(DummyPlayer);
+
+        _inputRecorder.ClearLog();
     }
 
     public void SetRespawnPosition (Transform position)

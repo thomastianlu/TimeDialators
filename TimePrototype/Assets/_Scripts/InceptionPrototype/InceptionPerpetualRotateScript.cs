@@ -16,6 +16,6 @@ public class InceptionPerpetualRotateScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        transform.Rotate(Vector3.forward * _rotateSpeed * 1/(_inceptionRecorder.GetGeneration() + 1));
+        transform.Rotate(Vector3.forward * _rotateSpeed * 1/Mathf.Pow(2, _inceptionRecorder.GetGeneration()));
 	}
 }

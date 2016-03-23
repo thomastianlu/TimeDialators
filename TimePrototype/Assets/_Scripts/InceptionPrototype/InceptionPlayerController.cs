@@ -9,6 +9,9 @@ public class InceptionPlayerController : MonoBehaviour {
     private Rigidbody2D _rigidBody;
 
     [SerializeField]
+    private GameObject _groundChecker;
+
+    [SerializeField]
     private bool _isGrounded;
 
     [SerializeField]
@@ -68,6 +71,8 @@ public class InceptionPlayerController : MonoBehaviour {
     private float _timerObjCurrentHeight;
     private float _timerObjCurrentDepth;
 
+    private float _delaySpaceTime = 0.5f;
+
     [SerializeField]
     private GameObject _robotHat;
 
@@ -117,6 +122,7 @@ public class InceptionPlayerController : MonoBehaviour {
     public void ClearLog()
     {
         _positionLog.Clear();
+        //Debug.Log("IAMCLEARINGLOG " + gameObject.name);
         _playBackTimer = 0f;
         _positionLogIterator = 0;
         _timer = 0;
@@ -125,6 +131,7 @@ public class InceptionPlayerController : MonoBehaviour {
     public void ResetToRespawnPosition()
     {
         transform.position = _currentRespawnPosition.position;
+        _delaySpaceTime = 0.5f;
     }
 
     public void SetAsMainPlayer()
@@ -134,6 +141,7 @@ public class InceptionPlayerController : MonoBehaviour {
         _rigidBody.isKinematic = false;
 
         gameObject.tag = "Player";
+        _groundChecker.tag = "GroundChecker";
         gameObject.layer = 9;
 
         foreach (GameObject x in _inceptionPlayerList)
@@ -204,16 +212,16 @@ public class InceptionPlayerController : MonoBehaviour {
             _APressOnce = false;
             _anim.Play("Idle");
         }
-        
+
 
         // ---------------------------- SPAWN NEW PERSON -------------------------------- //
 
+        _delaySpaceTime -= Time.deltaTime;
         if (Input.GetKeyDown(KeyCode.Space))
         {
 
-            if (!_spawnOnce && _currentGeneration < 3) {
+            if (!_spawnOnce && _currentGeneration < 3 && _delaySpaceTime < 0) {
                 SetInceptionLevelDown();
-                Debug.Log("WTFFFF");
             }
         }
         
@@ -239,6 +247,7 @@ public class InceptionPlayerController : MonoBehaviour {
 
     void SetInceptionLevelDown()
     {
+
         transform.position = _currentRespawnPosition.position;
         _currentGeneration++;
 
@@ -253,20 +262,23 @@ public class InceptionPlayerController : MonoBehaviour {
         }
 
         _generationChecker.IncreaseGeneration();
+        
+        _playBackMode = true;
+        _spawnOnce = true;
 
         _inceptionPlayerList[_generationChecker.GetGeneration()].SetActive(true);
         gameObject.tag = "DummyPlayer";
+        _groundChecker.tag = "DummyGroundChecker";
         gameObject.layer = 8;
         _rigidBody.isKinematic = true;
         _cameraFollowScript.SetPlayerFocus(_inceptionPlayerList[_generationChecker.GetGeneration()].transform);
 
-
-        ResetPlayBackMode();
-        _playBackMode = true;
-        _spawnOnce = true;
-
-
         _robotHat.SetActive(true);
+    }
+
+    public void SetGravity (float Gravity)
+    {
+        _rigidBody.gravityScale = Gravity;
     }
 
     public void ResetInception()
@@ -274,15 +286,14 @@ public class InceptionPlayerController : MonoBehaviour {
         int InceptionIterator = _inceptionPlayerList.Length - 1;
         while (InceptionIterator >= 0)
         {
-            Debug.Log(_generationChecker.GetGeneration());
+            Debug.Log("RESET: " + _inceptionPlayerList[InceptionIterator].gameObject.name);
             _inceptionPlayerList[InceptionIterator].GetComponent<InceptionPlayerController>().ResetToRespawnPosition();
+            _inceptionPlayerList[InceptionIterator].GetComponent<InceptionPlayerController>().SetGravity(1);
+            _inceptionPlayerList[InceptionIterator].transform.SetParent(GameObject.Find("Players").transform);
             _inceptionPlayerList[InceptionIterator].GetComponent<InceptionPlayerController>().SetEndIterator();
             InceptionIterator--;
         }
-
-        ClearLog();
-
-        _currentGeneration = 0;
+        
     }
 
     public void SetColorDown()
@@ -294,7 +305,6 @@ public class InceptionPlayerController : MonoBehaviour {
             x.color = currentColor;
         }
         depthSpeed = depthSpeed/2;
-        Debug.Log(gameObject.name + " " + depthSpeed);
     }
 
     public void SetColorUp()
@@ -312,12 +322,13 @@ public class InceptionPlayerController : MonoBehaviour {
     public void PlayerSetDownLevel()
     {
         _inceptionPlayerList[_generationChecker.GetGeneration()].GetComponent<InceptionPlayerController>().ClearLog();
+        _inceptionPlayerList[_generationChecker.GetGeneration()].GetComponent<InceptionPlayerController>().ResetToRespawnPosition();
         _rigidBody.isKinematic = true;
         _inceptionPlayerList[_generationChecker.GetGeneration()].SetActive(false);
         _currentGeneration--;
         _generationChecker.DecreaseGeneration();
 
-        if (gameObject.name == "PlayerInception")
+        if (gameObject.name == "PlayerInceptionBase")
         {
             ClearLog();
         }
@@ -327,19 +338,27 @@ public class InceptionPlayerController : MonoBehaviour {
 
     void PlayBackMode()
     {
-        _spawnOnce = false;
-        _timerObj.gameObject.SetActive(true);
-        _playBackTimer += (Time.deltaTime * depthSpeed);
-        float finalTimeStamp = _positionLog[_positionLog.Count - 1].TimeStamp;
+        if (_positionLog.Count > 0) { 
+            _spawnOnce = false;
+            _timerObj.gameObject.SetActive(true);
+            _playBackTimer += (Time.deltaTime * depthSpeed);
+            
 
-        _timerObj.localScale = new Vector3((finalTimeStamp - _playBackTimer) / finalTimeStamp * _timerObjCurrentSize, _timerObjCurrentHeight, _timerObjCurrentDepth);
+            float finalTimeStamp = _positionLog[_positionLog.Count - 1].TimeStamp;
 
-        if (_positionLogIterator < _positionLog.Count - 1)
-        {
-            if (_positionLog[_positionLogIterator].TimeStamp < _playBackTimer)
+            _timerObj.localScale = new Vector3((finalTimeStamp - _playBackTimer) / finalTimeStamp * _timerObjCurrentSize, _timerObjCurrentHeight, _timerObjCurrentDepth);
+
+            if (_positionLogIterator < _positionLog.Count - 1)
             {
-                transform.position = _positionLog[_positionLogIterator].Position;
-                _positionLogIterator++;
+                if (_positionLog[_positionLogIterator].TimeStamp < _playBackTimer)
+                {
+                    transform.position = _positionLog[_positionLogIterator].Position;
+                    _positionLogIterator++;
+                }
+            }
+            else
+            {
+                PlayerSetDownLevel();
             }
         }
         else

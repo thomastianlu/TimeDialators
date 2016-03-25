@@ -56,8 +56,6 @@ public class PlayerController : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Space) && _isGrounded == true)
         {
-            _rigidBody.AddForce(Vector2.up * _jumpForce);
-            _isGrounded = false;
             _inputRecorder.LogKey(InputState.SpacePressed, _timer);
         }
 
@@ -89,6 +87,12 @@ public class PlayerController : MonoBehaviour {
             _inputRecorder.LogKey(InputState.AReleased, _timer);
             _APressOnce = false;
             _anim.Play("Idle");
+        }
+
+        if (Input.GetKeyDown(KeyCode.W) && _isGrounded == true)
+        {
+            _rigidBody.AddForce(Vector2.up * _jumpForce);
+            _isGrounded = false;
         }
 
         if (Input.GetKey(KeyCode.S))

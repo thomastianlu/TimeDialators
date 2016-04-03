@@ -109,6 +109,13 @@ public class PlayerControllerTeamWork : MonoBehaviour {
         }
     }
 
+    public float GetRecordedTime() {
+        if (_positionRecorder.Count > 0) {
+            return _positionRecorder[_positionRecorder.Count - 1].TimeStamp;
+        }
+        return 0f;
+    }
+
     public void ResetTimer() {
         _timer = 0f;
     }

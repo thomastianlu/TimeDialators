@@ -9,6 +9,8 @@ public class PlayerManagerScript : MonoBehaviour {
     [SerializeField]
     private CameraFollowScript _mainCamera;
 
+    private float _longestRecordedTime;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -19,6 +21,18 @@ public class PlayerManagerScript : MonoBehaviour {
         ManagerPlayerSwitching();
     }
 
+    public void ResetAllTimers() {
+        foreach (PlayerControllerTeamWork x in _players) {
+            x.ResetTimer();
+        }
+    }
+
+    // Need to return the longest time in the pool
+    public void GetLongestTime() {
+        foreach(PlayerControllerTeamWork x in _players) {
+            x.GetRecordedTime();
+        }
+    }
 
     void ManagerPlayerSwitching()
     {
@@ -49,7 +63,7 @@ public class PlayerManagerScript : MonoBehaviour {
             _players[3].SetPlayerMode(PlayerState.FollowMode);
 
             _players[0].SetMainCharacter(false);
-            _players[1].SetMainCharacter(true);
+            _players[1].SetMainCharacter(true );
             _players[2].SetMainCharacter(false);
             _players[3].SetMainCharacter(false);
 

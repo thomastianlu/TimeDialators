@@ -11,6 +11,9 @@ public class CameraFollowScript : MonoBehaviour {
     [SerializeField]
     private float _followSpeed;
 
+    [SerializeField]
+    private Transform[] _allRobots;
+
 	// Use this for initialization
 	void Start () {
         _followPositionZ = transform.position.z;
@@ -20,9 +23,20 @@ public class CameraFollowScript : MonoBehaviour {
     {
         _followObject = followObject;
     }
+
+    public void SetFollowPlayer(int pos)
+    {
+        _followObject = _allRobots[pos];
+        Debug.Log("HERRO");
+    }
 	
-	// Update is called once per frame
-	void Update () {
+    public void SetPlayer1(){ _followObject = _allRobots[0]; }
+    public void SetPlayer2() { _followObject = _allRobots[1]; }
+    public void SetPlayer3() { _followObject = _allRobots[2]; }
+    public void SetPlayer4() { _followObject = _allRobots[3]; }
+
+    // Update is called once per frame
+    void Update () {
         _followPosition = _followObject.position;
         _followPosition.z = _followPositionZ;
 

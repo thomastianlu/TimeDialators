@@ -8,7 +8,8 @@ public enum PlayerState
     PlayerMode,
     FollowMode,
     PlaybackMode,
-    RecordMode
+    RecordMode,
+    IdleMode
 }
 
 public class PlayerControllerTeamWork : MonoBehaviour {
@@ -83,6 +84,9 @@ public class PlayerControllerTeamWork : MonoBehaviour {
     [SerializeField]
     private bool _setRecordOnce = false;
 
+    [SerializeField]
+    private bool _enableRecording = false;
+
     private int _positionRecorderIterator = 0;
 
     private float _pressSpaceTimer = 0.2f;
@@ -120,7 +124,7 @@ public class PlayerControllerTeamWork : MonoBehaviour {
                 ManageInputs();
                 break;
             case PlayerState.FollowMode:
-                //FollowMode();
+                FollowMode();
                 break;
             case PlayerState.PlaybackMode:
                 PlayBackMode();
@@ -157,46 +161,48 @@ public class PlayerControllerTeamWork : MonoBehaviour {
             _anim.Play("Idle");
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && _pressShiftTimer < 0)
+        if (_enableRecording)
         {
-            _pressShiftTimer = _pressShiftTimerReset;
+            if (Input.GetKeyDown(KeyCode.LeftShift) && _pressShiftTimer < 0)
+            {
+                _pressShiftTimer = _pressShiftTimerReset;
 
-            if (_playBackMode)
+                if (_playBackMode)
+                {
+                    _playerMode = PlayerState.PlayerMode;
+                    _playBackMode = false;
+                    _rigidBody.gravityScale = 1f;
+                }
+                else
+                {
+                    _playerMode = PlayerState.PlaybackMode;
+                    _playBackMode = true;
+                    _playbackTimerGlobal.ResetTimer();
+                    _rigidBody.gravityScale = 0f;
+                }
+            }
+
+            if (Input.GetKey(KeyCode.Space))
+            {
+                _pressSpaceTimer = _pressSpaceTimerReset;
+
+                if (!_setRecordOnce) {
+                    ClearLog();
+                    SetTimerRecordMode();
+                    _setRecordOnce = true;
+                }
+
+                _recordMode = true;
+                _playerMode = PlayerState.RecordMode;
+                _playerManager.SetRecordMode(true);
+            }
+            if (Input.GetKeyUp(KeyCode.Space))
             {
                 _playerMode = PlayerState.PlayerMode;
-                _playBackMode = false;
-                _rigidBody.gravityScale = 1f;
+                _recordMode = false;
+                _setRecordOnce = false;
+                _playerManager.SetRecordMode(false);
             }
-            else
-            {
-                _playerMode = PlayerState.PlaybackMode;
-                _playBackMode = true;
-                _playbackTimerGlobal.ResetTimer();
-                _rigidBody.gravityScale = 0f;
-            }
-        }
-
-        if (Input.GetKey(KeyCode.Space))
-        {
-            _pressSpaceTimer = _pressSpaceTimerReset;
-
-            if (!_setRecordOnce) {
-                ClearLog();
-                SetTimerRecordMode();
-                _setRecordOnce = true;
-            }
-
-            _recordMode = true;
-            _playerMode = PlayerState.RecordMode;
-            _playerManager.SetRecordMode(true);
-        }
-
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            _playerMode = PlayerState.PlayerMode;
-            _recordMode = false;
-            _setRecordOnce = false;
-            _playerManager.SetRecordMode(false);
         }
 
         if (Input.GetKey(KeyCode.A))
@@ -326,6 +332,11 @@ public class PlayerControllerTeamWork : MonoBehaviour {
                 gameObject.layer = 9;
             }
         }
+    }
+
+    public PlayerState ReturnPlayerState()
+    {
+        return _playerMode;
     }
 
     public void ResetPlayBackMode()

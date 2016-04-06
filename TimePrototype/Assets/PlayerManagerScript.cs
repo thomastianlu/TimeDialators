@@ -32,6 +32,8 @@ public class PlayerManagerScript : MonoBehaviour {
 
     [SerializeField]
     private bool _allowSwitching = false;
+    [SerializeField]
+    private bool _followEnabled = false;
 
 	// Use this for initialization
 	void Start () {
@@ -145,14 +147,38 @@ public class PlayerManagerScript : MonoBehaviour {
                 SetP4();
             }
         }
+
+        if (_followEnabled) { 
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                foreach(PlayerControllerTeamWork x in _players)
+                {
+                    if (x.ReturnPlayerState() != PlayerState.PlayerMode)
+                    {
+                        x.SetPlayerMode(PlayerState.FollowMode);
+                    }
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            foreach (PlayerControllerTeamWork x in _players)
+            {
+                if (x.ReturnPlayerState() != PlayerState.PlayerMode)
+                {
+                    x.SetPlayerMode(PlayerState.IdleMode);
+                }
+            }
+        }
     }
 
     public void SetP1()
     {
         _players[0].SetPlayerMode(PlayerState.PlayerMode);
-        _players[1].SetPlayerMode(PlayerState.FollowMode);
-        _players[2].SetPlayerMode(PlayerState.FollowMode);
-        _players[3].SetPlayerMode(PlayerState.FollowMode);
+        _players[1].SetPlayerMode(PlayerState.IdleMode);
+        _players[2].SetPlayerMode(PlayerState.IdleMode);
+        _players[3].SetPlayerMode(PlayerState.IdleMode);
 
         _players[0].SetMainCharacter(true);
         _players[1].SetMainCharacter(false);
@@ -168,10 +194,10 @@ public class PlayerManagerScript : MonoBehaviour {
 
     public void SetP2()
     {
-        _players[0].SetPlayerMode(PlayerState.FollowMode);
+        _players[0].SetPlayerMode(PlayerState.IdleMode);
         _players[1].SetPlayerMode(PlayerState.PlayerMode);
-        _players[2].SetPlayerMode(PlayerState.FollowMode);
-        _players[3].SetPlayerMode(PlayerState.FollowMode);
+        _players[2].SetPlayerMode(PlayerState.IdleMode);
+        _players[3].SetPlayerMode(PlayerState.IdleMode);
 
         _players[0].SetMainCharacter(false);
         _players[1].SetMainCharacter(true);
@@ -187,10 +213,10 @@ public class PlayerManagerScript : MonoBehaviour {
 
     public void SetP3()
     {
-        _players[0].SetPlayerMode(PlayerState.FollowMode);
-        _players[1].SetPlayerMode(PlayerState.FollowMode);
+        _players[0].SetPlayerMode(PlayerState.IdleMode);
+        _players[1].SetPlayerMode(PlayerState.IdleMode);
         _players[2].SetPlayerMode(PlayerState.PlayerMode);
-        _players[3].SetPlayerMode(PlayerState.FollowMode);
+        _players[3].SetPlayerMode(PlayerState.IdleMode);
 
         _players[0].SetMainCharacter(false);
         _players[1].SetMainCharacter(false);
@@ -206,9 +232,9 @@ public class PlayerManagerScript : MonoBehaviour {
 
     public void SetP4()
     {
-        _players[0].SetPlayerMode(PlayerState.FollowMode);
-        _players[1].SetPlayerMode(PlayerState.FollowMode);
-        _players[2].SetPlayerMode(PlayerState.FollowMode);
+        _players[0].SetPlayerMode(PlayerState.IdleMode);
+        _players[1].SetPlayerMode(PlayerState.IdleMode);
+        _players[2].SetPlayerMode(PlayerState.IdleMode);
         _players[3].SetPlayerMode(PlayerState.PlayerMode);
 
         _players[0].SetMainCharacter(false);

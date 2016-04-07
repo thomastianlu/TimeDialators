@@ -39,6 +39,7 @@ public class PlayerControllerTeamWork : MonoBehaviour {
 
     [SerializeField]
     private bool _isGrounded;
+    private bool _jumpOnce = false;
 
     [SerializeField]
     private bool _needJump = false;
@@ -223,8 +224,17 @@ public class PlayerControllerTeamWork : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.W) && _isGrounded == true)
         {
-            _rigidBody.AddForce(Vector2.up * _jumpForce);
-            _isGrounded = false;
+            if (!_jumpOnce) { 
+                _rigidBody.AddForce(Vector2.up * _jumpForce);
+                _isGrounded = true;
+                _jumpOnce = true;
+            }
+        }
+        
+        if (Input.GetKeyUp(KeyCode.W))
+        {
+            Debug.Log("WTF");
+            _jumpOnce = false;
         }
 
         if (Input.GetKey(KeyCode.S))

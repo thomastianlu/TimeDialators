@@ -40,7 +40,7 @@ public class CameraFollowScript : MonoBehaviour {
         _followPosition = _followObject.position;
         _followPosition.z = _followPositionZ;
 
-        transform.position = Vector3.Slerp(transform.position, _followPosition, Time.deltaTime * _followSpeed);
+        transform.position = Vector3.Lerp(transform.position, _followPosition, Time.deltaTime * _followSpeed);
 
 
         if (Input.GetKey(KeyCode.F1))

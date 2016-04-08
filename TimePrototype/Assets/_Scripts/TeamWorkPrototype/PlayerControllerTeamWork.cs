@@ -233,7 +233,6 @@ public class PlayerControllerTeamWork : MonoBehaviour {
         
         if (Input.GetKeyUp(KeyCode.W))
         {
-            Debug.Log("WTF");
             _jumpOnce = false;
         }
 

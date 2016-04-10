@@ -112,7 +112,7 @@ public class PlayerControllerTeamWork : MonoBehaviour {
         return _playBackMode;
     }
 
-    void ClearLog()
+    public void ClearLog()
     {
         _positionRecorder.Clear();
     }
@@ -168,19 +168,11 @@ public class PlayerControllerTeamWork : MonoBehaviour {
             {
                 _pressShiftTimer = _pressShiftTimerReset;
 
-                if (_playBackMode)
-                {
-                    _playerMode = PlayerState.PlayerMode;
-                    _playBackMode = false;
-                    _rigidBody.gravityScale = 1f;
-                }
-                else
-                {
-                    _playerMode = PlayerState.PlaybackMode;
-                    _playBackMode = true;
-                    _playbackTimerGlobal.ResetTimer();
-                    _rigidBody.gravityScale = 0f;
-                }
+                _playerMode = PlayerState.PlaybackMode;
+                _playBackMode = true;
+                _playbackTimerGlobal.ResetTimer();
+                _playbackTimerGlobal.ResetPlayBackMode();
+                _rigidBody.gravityScale = 0f;
             }
 
             if (Input.GetKey(KeyCode.Space))
@@ -190,6 +182,7 @@ public class PlayerControllerTeamWork : MonoBehaviour {
                 if (!_setRecordOnce) {
                     ClearLog();
                     SetTimerRecordMode();
+                    _playbackTimerGlobal.ResetPlayBackMode();
                     _setRecordOnce = true;
                 }
 
@@ -260,6 +253,11 @@ public class PlayerControllerTeamWork : MonoBehaviour {
         }
     }
 
+    public void SetRecordMode(bool Set)
+    {
+        _enableRecording = Set;
+    }
+
     void FollowMode()
     {
         if (Vector3.Distance(_followPoint.position, transform.position) > _thresholdFollowPosition)
@@ -293,11 +291,12 @@ public class PlayerControllerTeamWork : MonoBehaviour {
 
     void PlayBackMode()
     {
+        _pressShiftTimer -= Time.deltaTime;
+        GetComponent<BoxCollider2D>().isTrigger = true;
         _recordArt.SetActive(true);
+        _rigidBody.gravityScale = 0;
         if (_positionRecorder.Count > 0 && !_finishPlayback) {
-
-            if (_playbackTimerGlobal.GetCurrentTime() > _positionRecorder[_positionRecorderIterator].TimeStamp)
-            {
+            
                 transform.position = _positionRecorder[_positionRecorderIterator].Position;
                 _positionRecorderIterator++;
 
@@ -305,20 +304,31 @@ public class PlayerControllerTeamWork : MonoBehaviour {
                 {
                     _finishPlayback = true;
                 }
-            }
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && _isMainCharacter)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && _isMainCharacter && _pressShiftTimer < 0)
         {
+            _pressShiftTimer = _pressShiftTimerReset;
             _playerMode = PlayerState.PlayerMode;
             _playBackMode = false;
             _recordArt.SetActive(false);
+            _rigidBody.gravityScale = 1;
+            GetComponent<BoxCollider2D>().isTrigger = false;
         }
     }
 
     void SetTimerRecordMode()
     {
         _timer = _playbackTimerGlobal.GetCurrentTime();
+    }
+
+    public void TurnOffPlayBack()
+    {
+        _playerMode = PlayerState.IdleMode;
+        _playBackMode = false;
+        _recordArt.SetActive(false);
+        _rigidBody.gravityScale = 1;
+        GetComponent<BoxCollider2D>().isTrigger = false;
     }
 
     void RecordMode()

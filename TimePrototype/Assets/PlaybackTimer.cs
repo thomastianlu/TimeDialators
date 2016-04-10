@@ -41,44 +41,49 @@ public class PlaybackTimer : MonoBehaviour {
         _playBackTimer = 0f;
     }
 
+    public void ResetPlayBackMode()
+    {
+        _P1.ResetPlayBackMode();
+        _P2.ResetPlayBackMode();
+        _P3.ResetPlayBackMode();
+        _P4.ResetPlayBackMode();
+    }
+
     void ManageTimeline()
     {
         // Start the timeline if one of the objects gets into playback mode
-        if (_P1.GetPlayBackMode() && !_P2.GetPlayBackMode() && !_P3.GetPlayBackMode() && !_P4.GetPlayBackMode())
-        {
-            _playBackEndTimer = _P1.GetRecordedTime();
-        }
+        //if (_P1.GetPlayBackMode() && !_P2.GetPlayBackMode() && !_P3.GetPlayBackMode() && !_P4.GetPlayBackMode())
+        //{
+        //    _playBackEndTimer = _P1.GetRecordedTime();
+        //}
 
-        if (!_P1.GetPlayBackMode() && _P2.GetPlayBackMode() && !_P3.GetPlayBackMode() && !_P4.GetPlayBackMode())
-        {
-            _playBackEndTimer = _P2.GetRecordedTime();
-        }
+        //if (!_P1.GetPlayBackMode() && _P2.GetPlayBackMode() && !_P3.GetPlayBackMode() && !_P4.GetPlayBackMode())
+        //{
+        //    _playBackEndTimer = _P2.GetRecordedTime();
+        //}
 
-        if (!_P1.GetPlayBackMode() && !_P2.GetPlayBackMode() && _P3.GetPlayBackMode() && !_P4.GetPlayBackMode())
-        {
-            _playBackEndTimer = _P3.GetRecordedTime();
-        }
+        //if (!_P1.GetPlayBackMode() && !_P2.GetPlayBackMode() && _P3.GetPlayBackMode() && !_P4.GetPlayBackMode())
+        //{
+        //    _playBackEndTimer = _P3.GetRecordedTime();
+        //}
 
-        if (!_P1.GetPlayBackMode() && !_P2.GetPlayBackMode() && !_P3.GetPlayBackMode() && _P4.GetPlayBackMode())
-        {
-            _playBackEndTimer = _P4.GetRecordedTime();
-        }
+        //if (!_P1.GetPlayBackMode() && !_P2.GetPlayBackMode() && !_P3.GetPlayBackMode() && _P4.GetPlayBackMode())
+        //{
+        //    _playBackEndTimer = _P4.GetRecordedTime();
+        //}
 
-        if (!_P1.GetPlayBackMode() && !_P2.GetPlayBackMode() && !_P3.GetPlayBackMode() && !_P4.GetPlayBackMode())
-        {
-            _playBackEndTimer = 0f;
-        }
+        //if (!_P1.GetPlayBackMode() && !_P2.GetPlayBackMode() && !_P3.GetPlayBackMode() && !_P4.GetPlayBackMode())
+        //{
+        //    _playBackEndTimer = 0f;
+        //}
 
-        _playBackTimer = _playerManager.GetCurrentPlayerTime();
-        _playBackEndTimer = _playerManager.GetCurrentPlayerEndTime();
+        //_playBackTimer = _playerManager.GetCurrentPlayerTime();
+        //_playBackEndTimer = _playerManager.GetCurrentPlayerEndTime();
 
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            _P1.ResetPlayBackMode();
-            _P2.ResetPlayBackMode();
-            _P3.ResetPlayBackMode();
-            _P4.ResetPlayBackMode();
+            ResetPlayBackMode();
         }
 
         //if (_playBackTimer > _playBackEndTimer)

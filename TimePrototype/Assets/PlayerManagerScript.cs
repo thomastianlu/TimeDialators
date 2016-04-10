@@ -249,4 +249,12 @@ public class PlayerManagerScript : MonoBehaviour {
         _players[2].SetFollowPoint(_players[3].ReturnFollowPoint());
     }
 
+    public void EnableRecording()
+    {
+        foreach (PlayerControllerTeamWork x in _players)
+        {
+            x.SetRecordMode(true);
+        }
+    }
+
 }

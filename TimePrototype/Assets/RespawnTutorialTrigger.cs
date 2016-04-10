@@ -15,7 +15,6 @@ public class RespawnTutorialTrigger : MonoBehaviour {
     {
         if (other.tag == "Player")
         {
-            Debug.Log(other.gameObject.name);
             _tutorialObj.SetActive(true);
         }
     }

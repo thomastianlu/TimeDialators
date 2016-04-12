@@ -23,9 +23,13 @@ public class TimedDoorButton : MonoBehaviour {
 
     private bool _setOnce = false;
 
+    [SerializeField]
+    private AudioSource _audio;
+
 	// Use this for initialization
 	void Start () {
         _timerReset = _timer;
+        _audio = GetComponent<AudioSource>();
 	}
 	
     void Update(){
@@ -48,6 +52,9 @@ public class TimedDoorButton : MonoBehaviour {
         {
             _personOn = true;
             _timer = _timerReset;
+            if (!_audio.isPlaying) { 
+                _audio.Play();
+            }
         }
     }
 

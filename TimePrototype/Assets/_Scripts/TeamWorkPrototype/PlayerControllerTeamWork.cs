@@ -90,6 +90,14 @@ public class PlayerControllerTeamWork : MonoBehaviour {
     [SerializeField]
     private bool _enableRecording = false;
 
+    [SerializeField]
+    private Color _selectedColor;
+    [SerializeField]
+    private Color _deselectedColor;
+
+    [SerializeField]
+    private SpriteRenderer[] _sprites;
+
     private int _positionRecorderIterator = 0;
 
     private float _pressSpaceTimer = 0.2f;
@@ -207,6 +215,12 @@ public class PlayerControllerTeamWork : MonoBehaviour {
             else
             {
                 _playerMode = PlayerState.PlayerMode;
+
+                foreach (SpriteRenderer x in _sprites)
+                {
+                    x.color = _selectedColor;
+                }
+
                 _recordMode = false;
                 _setRecordOnce = false;
                 _playerManager.SetRecordMode(false);
@@ -335,6 +349,12 @@ public class PlayerControllerTeamWork : MonoBehaviour {
     public void TurnOffPlayBack()
     {
         _playerMode = PlayerState.IdleMode;
+
+        foreach (SpriteRenderer x in _sprites)
+        {
+            x.color = _deselectedColor;
+        }
+
         _playBackMode = false;
         _recordArt.SetActive(false);
         _rigidBody.gravityScale = 1;
@@ -359,6 +379,23 @@ public class PlayerControllerTeamWork : MonoBehaviour {
             else
             {
                 gameObject.layer = 9;
+            }
+
+            if (newMode == PlayerState.IdleMode)
+            {
+
+                foreach (SpriteRenderer x in _sprites)
+                {
+                    x.color = _deselectedColor;
+                }
+            }
+            else if (newMode == PlayerState.PlayerMode)
+            {
+
+                foreach (SpriteRenderer x in _sprites)
+                {
+                    x.color = _selectedColor;
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Rewired;
 
 public class ToggleNumberTutorial : MonoBehaviour {
 
@@ -22,29 +23,50 @@ public class ToggleNumberTutorial : MonoBehaviour {
     private MainCameraIntro _mainCamera;
     private bool _setFadeOnce = false;
 
+
+    private bool _DUp;
+    private bool _DDown;
+    private bool _DLeft;
+    private bool _DRight;
+    private Player _player;
+
+    private AudioSource _audio;
+
     // Use this for initialization
     void Start () {
-	
+        _audio = GameObject.Find("GameAudioSystem").GetComponent<AudioSource>();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+
+
+    private void GetInput()
+    {
+        _player = ReInput.players.GetPlayer(0);
+        _DUp = _player.GetButtonDown("D-Up");
+        _DDown = _player.GetButtonDown("D-Down");
+        _DLeft = _player.GetButtonDown("D-Left");
+        _DRight = _player.GetButtonDown("D-Right");
+    }
+
+
+    // Update is called once per frame
+    void Update () {
+        GetInput();
+        if (_DUp)
         {
             Set1 = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (_DLeft)
         {
             Set2 = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (_DDown)
         {
             Set3 = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha4))
+        if (_DRight)
         {
             Set4 = true;
         }
@@ -57,6 +79,11 @@ public class ToggleNumberTutorial : MonoBehaviour {
             {
                 _mainCamera.SetFadeOut();
                 _setFadeOnce = true;
+            }
+
+            if (_setFadeOnce)
+            {
+                _audio.volume -= 0.003f;
             }
 
             if (_nextSceneTimer < 0)

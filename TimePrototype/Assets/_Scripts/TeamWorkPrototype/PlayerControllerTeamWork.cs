@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using Rewired;
 
 public enum PlayerState
 {
@@ -94,7 +95,15 @@ public class PlayerControllerTeamWork : MonoBehaviour {
     private float _pressSpaceTimerReset;
     private float _pressShiftTimer = 0.2f;
     private float _pressShiftTimerReset;
-    
+
+    private Vector3 _moveVector;
+    private bool _jump;
+    private bool _record;
+    [SerializeField]
+    private bool _playback;
+
+    private Player _player;
+
     // Use this for initialization
     void Start () {
         _rigidBody = GetComponent<Rigidbody2D>();
@@ -103,6 +112,16 @@ public class PlayerControllerTeamWork : MonoBehaviour {
         _pressShiftTimerReset = _pressShiftTimer;
 	}
 	
+    private void GetInput()
+    {
+        _player = ReInput.players.GetPlayer(0);
+        _moveVector.x = _player.GetAxis("Move Horizontal"); // get input by name or action id
+        _moveVector.y = _player.GetAxis("Move Vertical");
+        _jump = _player.GetButton("Jump");
+        _record = _player.GetButton("Record");
+        _playback = _player.GetButtonDown("Playback");
+    }
+
     public void SetGround(bool grounded) {
         _isGrounded = grounded;
     }
@@ -119,6 +138,7 @@ public class PlayerControllerTeamWork : MonoBehaviour {
 
 	// Update is called once per frame
 	void FixedUpdate () {
+        GetInput();
         switch (_playerMode)
         {
             case PlayerState.PlayerMode:
@@ -158,24 +178,17 @@ public class PlayerControllerTeamWork : MonoBehaviour {
         if (!_isGrounded) {
             _anim.CrossFade("JumpHold", 0.1f);
         }
-        else if (_isGrounded && !_APressOnce && !_DPressOnce) {
-            _anim.Play("Idle");
+        else if (_isGrounded && !_APressOnce && !_DPressOnce)
+        {
+            if (!_anim.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+            {
+                _anim.Play("Idle");
+            }
         }
 
         if (_enableRecording)
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift) && _pressShiftTimer < 0)
-            {
-                _pressShiftTimer = _pressShiftTimerReset;
-
-                _playerMode = PlayerState.PlaybackMode;
-                _playBackMode = true;
-                _playbackTimerGlobal.ResetTimer();
-                _playbackTimerGlobal.ResetPlayBackMode();
-                _rigidBody.gravityScale = 0f;
-            }
-
-            if (Input.GetKey(KeyCode.Space))
+            if (_record)
             {
                 _pressSpaceTimer = _pressSpaceTimerReset;
 
@@ -190,66 +203,60 @@ public class PlayerControllerTeamWork : MonoBehaviour {
                 _playerMode = PlayerState.RecordMode;
                 _playerManager.SetRecordMode(true);
             }
-            if (Input.GetKeyUp(KeyCode.Space))
+            else
             {
                 _playerMode = PlayerState.PlayerMode;
                 _recordMode = false;
                 _setRecordOnce = false;
                 _playerManager.SetRecordMode(false);
             }
-        }
 
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.position += Vector3.left * _moveSpeed;
-            transform.localScale = new Vector3(-1f, 1f, 1f);
-            _anim.Play("Walk");
-            if (!_APressOnce)
+            if (_playback && _pressShiftTimer < 0)
             {
-                _APressOnce = true;
+                _pressShiftTimer = _pressShiftTimerReset;
+
+                _playerMode = PlayerState.PlaybackMode;
+                _playBackMode = true;
+                _playbackTimerGlobal.ResetTimer();
+                _playbackTimerGlobal.ResetPlayBackMode();
+                _rigidBody.gravityScale = 0f;
             }
         }
+        
 
-        if (Input.GetKeyUp(KeyCode.A))
+        if (_moveVector.x != 0)
+        {
+            transform.position += new Vector3(_moveVector.x , 0f, 0f) * _moveSpeed;
+
+            if (_moveVector.x > 0)
+            {
+                transform.localScale = new Vector3(1f, 1f, 1f);
+            }
+            else
+            {
+                transform.localScale = new Vector3(-1f, 1f, 1f);
+            }
+            if (!_anim.GetCurrentAnimatorStateInfo(0).IsName("Walk")) { 
+                _anim.Play("Walk");
+            }
+        }
+        else
         {
             _anim.Play("Idle");
         }
 
-        if (Input.GetKeyDown(KeyCode.W) && _isGrounded == true)
+        if (_jump && _isGrounded == true)
         {
             if (!_jumpOnce) { 
                 _rigidBody.AddForce(Vector2.up * _jumpForce);
                 _isGrounded = true;
                 _jumpOnce = true;
             }
+
         }
-        
-        if (Input.GetKeyUp(KeyCode.W))
+        else
         {
             _jumpOnce = false;
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-        }
-
-        if (Input.GetKeyUp(KeyCode.S))
-        {
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.position += Vector3.right * _moveSpeed;
-            transform.localScale = new Vector3(1f, 1f, 1f);
-            _anim.Play("Walk");
-            if (!_DPressOnce)
-            {
-                _DPressOnce = true;
-            }
-        }
-
-        if (Input.GetKeyUp(KeyCode.D)) {
-            _anim.Play("Idle");
         }
     }
 
@@ -306,7 +313,7 @@ public class PlayerControllerTeamWork : MonoBehaviour {
                 }
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && _isMainCharacter && _pressShiftTimer < 0)
+        if (_playback && _isMainCharacter && _pressShiftTimer < 0)
         {
             _pressShiftTimer = _pressShiftTimerReset;
             _playerMode = PlayerState.PlayerMode;

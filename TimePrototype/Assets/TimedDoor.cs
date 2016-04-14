@@ -17,9 +17,11 @@ public class TimedDoor : MonoBehaviour {
     [SerializeField]
     private int _currentSwitch = 0;
 
-
+    private bool _audioPlayOnce = false;
+    private AudioSource _audio;
 	// Use this for initialization
 	void Start () {
+        _audio = GetComponent<AudioSource>();
 	}
 	
 	// Update is called once per frame
@@ -27,6 +29,9 @@ public class TimedDoor : MonoBehaviour {
     {
         if (CanOpenDoor()) { 
             _doorObj.position = Vector3.Lerp(_doorObj.position, _doorOpenPosition.position, Time.deltaTime * 10f);
+            if (!_audioPlayOnce) { 
+                _audio.Play();
+            }
         }
     }
 

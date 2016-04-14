@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Rewired;
 
 public class PlayerManagerScript : MonoBehaviour {
 
@@ -34,6 +35,13 @@ public class PlayerManagerScript : MonoBehaviour {
     private bool _allowSwitching = false;
     [SerializeField]
     private bool _followEnabled = false;
+    
+    private bool _DUp;
+    private bool _DDown;
+    private bool _DLeft;
+    private bool _DRight;
+
+    private Player _player;
 
 	// Use this for initialization
 	void Start () {
@@ -42,6 +50,14 @@ public class PlayerManagerScript : MonoBehaviour {
 
     // Playback Timer needs to be in the playback timer script
 
+    private void GetInput()
+    {
+        _player = ReInput.players.GetPlayer(0);
+        _DUp = _player.GetButtonDown("D-Up");
+        _DDown = _player.GetButtonDown("D-Down");
+        _DLeft = _player.GetButtonDown("D-Left");
+        _DRight = _player.GetButtonDown("D-Right");
+    }
 
     public void SetRecordMode(bool recordMode)
     {
@@ -50,6 +66,7 @@ public class PlayerManagerScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        GetInput();
         ManageRecordMode();
         ManagerPlayerSwitching();
         ManagePlayBackMode();
@@ -127,22 +144,22 @@ public class PlayerManagerScript : MonoBehaviour {
     void ManagerPlayerSwitching()
     {
         if (_allowSwitching) { 
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            if (_DUp)
             {
                 SetP1();
             }
 
-            if (Input.GetKeyDown(KeyCode.Alpha2))
+            if (_DLeft)
             {
                 SetP2();
             }
 
-            if (Input.GetKeyDown(KeyCode.Alpha3))
+            if (_DDown)
             {
                 SetP3();
             }
 
-            if (Input.GetKeyDown(KeyCode.Alpha4))
+            if (_DRight)
             {
                 SetP4();
             }

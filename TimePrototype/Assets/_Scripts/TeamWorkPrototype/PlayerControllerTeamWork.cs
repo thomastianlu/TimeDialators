@@ -40,6 +40,7 @@ public class PlayerControllerTeamWork : MonoBehaviour {
 
     [SerializeField]
     private bool _isGrounded;
+    [SerializeField]
     private bool _jumpOnce = false;
 
     [SerializeField]
@@ -245,12 +246,14 @@ public class PlayerControllerTeamWork : MonoBehaviour {
             _anim.Play("Idle");
         }
 
-        if (_jump && _isGrounded == true)
+        if (_jump)
         {
-            if (!_jumpOnce) { 
-                _rigidBody.AddForce(Vector2.up * _jumpForce);
-                _isGrounded = true;
-                _jumpOnce = true;
+            if (_isGrounded) { 
+                if (!_jumpOnce) { 
+                    _rigidBody.AddForce(Vector2.up * _jumpForce);
+                    _isGrounded = false;
+                    _jumpOnce = true;
+                }
             }
 
         }
